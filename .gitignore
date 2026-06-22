@@ -19,7 +19,7 @@ packages/
 
 # Logs
 *.log
-log.txt
+# log.txt se incluye intencionalmente como evidencia del punto extra
 
 # OS
 Thumbs.db
