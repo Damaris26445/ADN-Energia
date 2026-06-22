@@ -1,0 +1,41 @@
+name: CI/CD — Transportes del Norte
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build & Publish
+    runs-on: windows-latest   # WPF solo corre en Windows
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restaurar paquetes NuGet
+        run: dotnet restore TransportesNorte/TransportesNorte.csproj
+
+      - name: Compilar en modo Release
+        run: dotnet build TransportesNorte/TransportesNorte.csproj --no-restore --configuration Release
+
+      - name: Publicar ejecutable
+        run: >
+          dotnet publish TransportesNorte/TransportesNorte.csproj
+          --no-build
+          --configuration Release
+          --output ./publish
+
+      - name: Subir artefacto de build
+        uses: actions/upload-artifact@v4
+        with:
+          name: TransportesNorte-Release
+          path: ./publish
+          retention-days: 7
