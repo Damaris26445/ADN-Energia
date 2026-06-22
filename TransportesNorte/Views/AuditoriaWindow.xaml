@@ -1,0 +1,245 @@
+<Window x:Class="TransportesNorte.Views.AuditoriaWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:TransportesNorte.Converters"
+        Title="Auditoría de Pesaje"
+        Width="580" Height="620"
+        MinWidth="520" MinHeight="560"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F0F2F5">
+
+    <Window.Resources>
+        <conv:BoolToVisibilityConverter        x:Key="BoolToVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
+        <conv:InverseBoolConverter             x:Key="InvBool"/>
+        <conv:StringToVisibilityConverter      x:Key="StrToVis"/>
+
+        <!-- Etiqueta de campo -->
+        <Style x:Key="Lbl" TargetType="TextBlock">
+            <Setter Property="FontSize"     Value="11"/>
+            <Setter Property="Foreground"   Value="#6B7280"/>
+            <Setter Property="FontWeight"   Value="SemiBold"/>
+            <Setter Property="Margin"       Value="0,0,0,3"/>
+        </Style>
+
+        <!-- Valor de solo lectura -->
+        <Style x:Key="ValorLectura" TargetType="TextBlock">
+            <Setter Property="FontSize"     Value="14"/>
+            <Setter Property="Foreground"   Value="#1F2937"/>
+            <Setter Property="Margin"       Value="0,0,0,14"/>
+        </Style>
+
+        <!-- TextBox de entrada -->
+        <Style x:Key="TxtInput" TargetType="TextBox">
+            <Setter Property="FontSize"     Value="14"/>
+            <Setter Property="Padding"      Value="10,8"/>
+            <Setter Property="BorderBrush"  Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin"       Value="0,0,0,14"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#2563EB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Boton principal -->
+        <Style x:Key="BtnAutorizar" TargetType="Button">
+            <Setter Property="Background"     Value="#1E3A5F"/>
+            <Setter Property="Foreground"     Value="White"/>
+            <Setter Property="FontSize"       Value="14"/>
+            <Setter Property="FontWeight"     Value="SemiBold"/>
+            <Setter Property="Padding"        Value="24,12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"         Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                Padding="{TemplateBinding Padding}"
+                                Opacity="{TemplateBinding Opacity}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#9CA3AF"/>
+                                <Setter Property="Cursor"     Value="Arrow"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2A4F7A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>   <!-- Header -->
+            <RowDefinition Height="*"/>    <!-- Formulario -->
+            <RowDefinition Height="Auto"/> <!-- Boton -->
+        </Grid.RowDefinitions>
+
+        <!-- ========== HEADER ========== -->
+        <Border Grid.Row="0" Background="#1E3A5F">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0">
+                <TextBlock Text="&#x2696;" FontSize="22" Foreground="White"
+                           VerticalAlignment="Center" Margin="0,0,12,0"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Foreground="White" FontSize="15" FontWeight="Bold">
+                        <Run Text="Auditoría de Pesaje — "/>
+                        <Run Text="{Binding FolioDespacho, Mode=OneWay}"/>
+                    </TextBlock>
+                    <TextBlock Foreground="#93C5FD" FontSize="11"
+                               Text="{Binding CentroOperativo}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- ========== FORMULARIO ========== -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,20">
+            <StackPanel>
+
+                <!-- Datos de solo lectura -->
+                <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="1"
+                        CornerRadius="6" Padding="16" Margin="0,0,0,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Placa -->
+                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,12,0">
+                            <TextBlock Text="PLACA" Style="{StaticResource Lbl}"/>
+                            <TextBlock Text="{Binding PlacaTracto}" Style="{StaticResource ValorLectura}"
+                                       FontWeight="Bold" FontSize="16"/>
+                        </StackPanel>
+
+                        <!-- Conductor -->
+                        <StackPanel Grid.Column="1" Grid.Row="0">
+                            <TextBlock Text="CONDUCTOR" Style="{StaticResource Lbl}"/>
+                            <TextBlock Text="{Binding NombreConductor}" Style="{StaticResource ValorLectura}"/>
+                        </StackPanel>
+
+                        <!-- Peso Teorico ERP -->
+                        <StackPanel Grid.Column="1" Grid.Row="1">
+                            <TextBlock Text="PESO TEÓRICO ERP (Ton)" Style="{StaticResource Lbl}"/>
+                            <TextBlock Text="{Binding PesoTeoricoERP, StringFormat=N2}"
+                                       Style="{StaticResource ValorLectura}"
+                                       Foreground="#1D4ED8" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Input: Peso Bascula Salida -->
+                <TextBlock Text="PESO BÁSCULA SALIDA (Ton)" Style="{StaticResource Lbl}"/>
+                <TextBox Text="{Binding PesoBasculaTexto, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource TxtInput}"
+                         IsEnabled="{Binding SalidaAutorizada, Converter={StaticResource InvBool}}"
+                         ToolTip="Ingrese el peso registrado en la bascula. Permite valores negativos."/>
+
+                <!-- Peso Neto Real (calculado) -->
+                <Border Background="#F0FDF4" BorderBrush="#86EFAC" BorderThickness="1"
+                        CornerRadius="5" Padding="14,10" Margin="0,0,0,16"
+                        Visibility="{Binding PesoNetoReal, Converter={StaticResource StrToVis},
+                                     ConverterParameter=decimal}">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding PesoNetoReal}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Peso Neto Real (calculado): "
+                                   FontSize="13" Foreground="#166534"/>
+                        <TextBlock Text="{Binding PesoNetoReal, StringFormat=N2}"
+                                   FontSize="13" FontWeight="Bold" Foreground="#166534"/>
+                        <TextBlock Text=" Ton" FontSize="13" Foreground="#166534"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- ALERTA: diferencia > 3% -->
+                <Border Background="#FEF2F2" BorderBrush="#FCA5A5" BorderThickness="1"
+                        CornerRadius="5" Padding="14,12" Margin="0,0,0,14"
+                        Visibility="{Binding MostrarAlerta, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <TextBlock Text="&#x26A0; " FontSize="16" Foreground="#B91C1C"/>
+                            <TextBlock FontSize="13" FontWeight="Bold" Foreground="#B91C1C">
+                                <Run Text="Diferencia de peso: "/>
+                                <Run Text="{Binding DiferenciaPct, StringFormat=N1, Mode=OneWay}"/>
+                                <Run Text="% — supera el límite del 3%"/>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <!-- Campo justificacion (obligatorio cuando hay alerta) -->
+                        <TextBlock Text="JUSTIFICACIÓN DE DIFERENCIA (obligatorio)"
+                                   Style="{StaticResource Lbl}" Foreground="#B91C1C"/>
+                        <TextBox Text="{Binding Justificacion, UpdateSourceTrigger=PropertyChanged}"
+                                 AcceptsReturn="True" TextWrapping="Wrap"
+                                 MinHeight="70" MaxHeight="120"
+                                 FontSize="13" Padding="10,8"
+                                 BorderBrush="#FCA5A5" BorderThickness="1"
+                                 VerticalScrollBarVisibility="Auto"
+                                 IsEnabled="{Binding SalidaAutorizada, Converter={StaticResource InvBool}}"
+                                 ToolTip="Describa la razon de la diferencia de peso para continuar."/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Mensaje de exito -->
+                <Border Background="#ECFDF5" BorderBrush="#6EE7B7" BorderThickness="1"
+                        CornerRadius="5" Padding="14,10"
+                        Visibility="{Binding MensajeExito, Converter={StaticResource StrToVis}}">
+                    <TextBlock Text="{Binding MensajeExito}"
+                               Foreground="#065F46" FontSize="13" FontWeight="SemiBold"/>
+                </Border>
+
+                <!-- Mensaje de error -->
+                <Border Background="#FEF2F2" BorderBrush="#FCA5A5" BorderThickness="1"
+                        CornerRadius="5" Padding="14,10"
+                        Visibility="{Binding MensajeError, Converter={StaticResource StrToVis}}">
+                    <TextBlock Text="{Binding MensajeError}"
+                               Foreground="#B91C1C" FontSize="13" TextWrapping="Wrap"/>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ========== BOTON AUTORIZAR ========== -->
+        <Border Grid.Row="2" Background="White" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0"
+                Padding="24,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Spinner mientras guarda -->
+                <TextBlock Grid.Column="0" VerticalAlignment="Center"
+                           FontSize="12" Foreground="#6B7280"
+                           Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
+                    Guardando en base de datos...
+                </TextBlock>
+
+                <Button Grid.Column="1"
+                        Content="✓  Autorizar Salida"
+                        Command="{Binding AutorizarSalidaCommand}"
+                        Style="{StaticResource BtnAutorizar}"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
