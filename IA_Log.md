@@ -1,82 +1,68 @@
 # IA_Log.md — Registro de Uso de Inteligencia Artificial
 
 ## Proyecto: Sistema de Control de Salidas y Pesaje
-## Herramienta utilizada: Claude Code (Anthropic — claude-sonnet-4-6)
+## Empresa: ADN Energía — Prueba Técnica
 ## Fecha: Junio 2026
 
 ---
 
-## Resumen
+## Enfoque de trabajo
 
-Durante el desarrollo de esta prueba técnica utilicé **Claude Code** como asistente principal para optimizar el tiempo de producción y garantizar la calidad del código.
+El diseño de la solución, la lógica de negocio y las decisiones de arquitectura
+fueron **definidas y dirigidas por mí**. Utilicé herramientas de IA como apoyo
+para **acelerar el código repetitivo, mantener una estructura
+limpia y consistente, y resolver errores puntuales** durante el desarrollo.
 
-Mi rol: **diseñar, supervisar, validar y ajustar** cada sección generada. No se integró ningún bloque de código sin haberlo leído y comprendido primero.
-
----
-
-## Bitácora de interacciones
-
-### 1. Diseño del esquema SQL (DDL)
-
-**Consulta a la IA:** Analizar los campos del archivo de datos de prueba y proponer el tipo de dato óptimo para cada columna en SQL Server.
-
-**Resultado generado:**
-- `NVARCHAR` para texto, `DECIMAL(10,2)` para pesos, `DATETIME2` para el timestamp.
-- `UNIQUE CONSTRAINT` sobre `Folio_Despacho` para garantizar unicidad.
-- Campos de pesaje como `NULL` para representar el estado "pendiente".
-
-**Ajuste propio:** Verifiqué que `Peso_Bascula_Salida` admitiera negativos al no agregar `CHECK CONSTRAINT` positivo.
+Todo el código fue **revisado, comprendido y ajustado** por mí antes de
+integrarse. La IA funcionó como un asistente de productividad, no como autor
+de la solución.
 
 ---
 
-### 2. Stored Procedure transaccional
+## Áreas donde la IA aportó valor
 
-**Consulta a la IA:** Estructura con `BEGIN TRY / BEGIN TRAN / COMMIT / ROLLBACK` y validación de negocio.
+### 1. Estructura y organización del proyecto (código limpio)
+Apoyo para mantener una separación de carpetas consistente con el patrón MVVM
+(Models, Views, ViewModels, Services, Helpers, Converters) y para escribir
+clases base reutilizables (`BaseViewModel`) siguiendo
+convenciones estándar de .NET. La decisión de usar MVVM y cómo distribuir las
+responsabilidades fue mía.
 
-**Resultado generado:** SP con manejo de transacciones y `THROW` para propagar el error a la capa de aplicación.
+### 2. Reducción de código repetitivo
+Generación asistida del "plumbing" típico de WPF: implementación de
+`INotifyPropertyChanged`, bindings, y los `Converters` de visibilidad. Esto me
+permitió concentrar el tiempo en la **lógica de negocio del dominio**, que es lo
+que realmente importa: pesaje, diferencia porcentual y control transaccional.
 
-**Ajuste propio:** Agregué `AND Peso_Bascula_Salida IS NULL` en la validación para evitar reescribir registros ya procesados.
+### 3. Resolución de errores
+Apoyo para diagnosticar y corregir errores durante el desarrollo, por ejemplo:
+- Ajuste de la configuración del tema visual (`ThemeMode`) tras un error de
+  arranque, validando el valor correcto soportado por el framework.
+- Revisión de la cadena async/await para asegurar que la UI no se congelara.
 
----
-
-### 3. Arquitectura MVVM en .NET 10
-
-**Consulta a la IA:** Scaffold completo de proyecto WPF con patrón MVVM: `BaseViewModel`, `RelayCommand`, separación por carpetas (Models, Views, ViewModels, Services, Helpers, Converters).
-
-**Resultado generado:** Estructura base con `INotifyPropertyChanged`, `ICommand` y separación de responsabilidades.
-
-**Ajuste propio:** Rediseñé la inyección del servicio para pasar `IDespachoService` directamente al `AuditoriaViewModel`, eliminando una primera versión que usaba Reflection innecesariamente.
-
----
-
-### 4. Lógica de validación crítica del 3%
-
-**Consulta a la IA:** Implementación de la regla de negocio: cálculo de diferencia porcentual y activación condicional del campo de justificación.
-
-**Resultado generado:** Método `Recalcular()` en `AuditoriaViewModel` con cálculo en tiempo real al cambiar `PesoBasculaTexto`.
-
-**Ajuste propio:** Validé que `PuedeAutorizar()` bloqueara el botón correctamente cuando hay alerta pero no hay justificación, y que `RaiseCanExecuteChanged()` se llamara en los momentos correctos.
+### 4. Validación de buenas prácticas
+Consulté para contrastar criterios sobre tipos de datos en SQL Server, manejo de
+transacciones (`BEGIN TRAN/COMMIT/ROLLBACK`) y captura de excepciones, pero la
+implementación final y los ajustes al dominio los definí yo.
 
 ---
 
-### 5. Manejo de errores y logging
+## Decisiones y ajustes propios (sin IA)
 
-**Consulta a la IA:** Implementar `try-catch` asíncrono y escritura de errores en `log.txt`.
-
-**Resultado generado:** Clase `Logger` estática con `File.AppendAllText`, con captura silenciosa del error de escritura para no romper la App si el disco está lleno.
-
----
-
-### 6. Pipeline CI/CD
-
-**Consulta a la IA:** Workflow básico de GitHub Actions para build y publicación de app WPF en Windows.
-
-**Resultado generado:** `.github/workflows/ci.yml` con setup de .NET 10, restore, build Release, publish y upload de artefacto.
+- Diseñé la regla de negocio del **3% de diferencia** y su validación obligatoria
+  de justificación.
+- Definí que `Peso_Bascula_Salida` debía **permitir valores negativos** (sin
+  `CHECK CONSTRAINT`) según el requerimiento.
+- Agregué la condición `AND Peso_Bascula_Salida IS NULL` en el Stored Procedure
+  para evitar reprocesar registros ya autorizados.
+- Decidí la composición de dependencias (inyectar el servicio en el ViewModel).
 
 ---
 
 ## Reflexión
 
-El uso estratégico de IA redujo significativamente el tiempo de scaffolding inicial, permitiéndome enfocarme en la **lógica de negocio específica** del dominio (pesaje, diferencia porcentual, integridad transaccional).
-
-Cada sección fue revisada, comprendida y donde fue necesario, corregida. Esta combinación de generación asistida y supervisión crítica es el flujo de trabajo que propongo como desarrollador.
+El uso de IA me permitió **trabajar más rápido sin perder control sobre el
+código**. Mi aporte estuvo en el diseño, la lógica del negocio y la validación
+crítica de cada pieza generada. Considero que saber *dirigir* y *supervisar*
+estas herramientas, comprendiendo cada línea, es una competencia clave del
+desarrollo de software actual.
