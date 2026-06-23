@@ -1,6 +1,7 @@
 <Application x:Class="TransportesNorte.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ThemeMode="Light">
     <!--
         StartupUri no se usa aqui porque la ventana se crea en App.xaml.cs
         con inyeccion de dependencias (pasamos el servicio al ViewModel).

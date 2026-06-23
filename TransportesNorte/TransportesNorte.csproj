@@ -9,6 +9,8 @@
     <RootNamespace>TransportesNorte</RootNamespace>
     <AssemblyName>TransportesNorte</AssemblyName>
     <Nullable>enable</Nullable>
+    <!-- Permite usar ThemeMode="Fluent" (API experimental en WPF) -->
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
